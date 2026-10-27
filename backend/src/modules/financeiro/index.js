@@ -6,3 +6,5 @@ export {
   INADIMPLENTE,
   calcularSituacao,
 } from './domain/situacao-financeira.js';
+
+export { criarParcelaRepositoryEmMemoria } from './infra/parcela.repository.memoria.js';
