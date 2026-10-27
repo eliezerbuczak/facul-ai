@@ -129,8 +129,16 @@ domínio e de aplicação.
 | `infra/` repositórios | Só o de memória | O de MySQL precisaria de banco: fora do escopo de "testes unitários curtos" |
 | `infra/` provider demo | Sim | Unitário — é lógica de roteamento, determinística |
 | `infra/` provider Anthropic | Só o mapeamento de erro | `fetch` mocado; não se testa a API da Anthropic |
-| `http/` | Não | Smoke manual via `curl`, documentado no doc 07 §7 |
+| `http/` | **Sim** | Integração em processo via `app.inject()` do Fastify |
 | Front | Não | O enunciado pede unitários da regra financeira; UI fica em verificação manual |
+
+A linha de `http/` mudou em relação ao que esta spec previa. A previsão era
+deixar a camada HTTP para verificação manual por `curl`; na prática,
+`app.inject()` executa o ciclo requisição→resposta inteiro em processo, sem
+abrir porta, em milissegundos. Como o enunciado pede nominalmente "validações,
+tratamento de erros e respostas HTTP adequadas", deixar justamente isso sem
+teste automatizado seria deixar de fora o que está sendo avaliado. O custo que
+justificava a exclusão não existe.
 
 O uso do repositório **em memória** em vez de mocks nos testes de aplicação é
 deliberado: o adaptador de memória é código real, com o mesmo contrato. Um teste
