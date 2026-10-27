@@ -33,8 +33,9 @@ npm run dev --prefix frontend     # interface em http://localhost:5173
 
 Abra <http://localhost:5173>.
 
-> O `.env` é **opcional** — todo valor tem padrão. Para customizar:
-> `cp .env.example .env` na raiz. Se a porta 5173 estiver ocupada,
+> Não precisa criar `.env`: o `npm run dev` copia o `.env.example` na primeira
+> execução, e todo valor já tem padrão. Edite-o se quiser customizar — é só aí
+> que entra a `ANTHROPIC_API_KEY`. Se a porta 5173 estiver ocupada,
 > `PORT=5174 npm run dev --prefix frontend`.
 
 ### Conferir que subiu
