@@ -10,12 +10,28 @@ import {
   criarParcelaRepositoryEmMemoria,
 } from '../modules/financeiro/index.js';
 import {
+  criarAnthropicProvider,
+  criarClienteAnthropic,
   criarDemoProvider,
   criarExecutarFerramenta,
   criarResponderPergunta,
 } from '../modules/assistente/index.js';
 import { hojeEm } from '../shared/data.js';
 import { carregarSeed } from './seed.js';
+
+/**
+ * Escolhe o provider de LLM conforme a configuração.
+ *
+ * Sem chave, a aplicação **sobe normalmente** em modo demonstrativo — não
+ * falha na inicialização. Um avaliador sem chave precisa conseguir rodar o
+ * projeto inteiro (RF-08).
+ *
+ * @param {any} config
+ */
+export function selecionarProvider(config) {
+  if (config.modoAssistente !== 'anthropic') return criarDemoProvider();
+  return criarAnthropicProvider({ cliente: criarClienteAnthropic(config), config });
+}
 
 /**
  * Raiz de composição: escolhe os adaptadores conforme a configuração e monta
@@ -48,8 +64,7 @@ export function montarCasosDeUso(config, overrides = {}) {
     obterFinanceiroDoAluno: criarObterFinanceiroDoAluno(deps),
   };
 
-  // O provider real entra aqui quando houver chave; o laço é o mesmo.
-  const provider = criarDemoProvider();
+  const provider = selecionarProvider(config);
 
   return {
     ...consultas,
