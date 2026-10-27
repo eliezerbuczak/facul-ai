@@ -9,3 +9,5 @@ export {
 
 export { criarParcelaRepositoryEmMemoria } from './infra/parcela.repository.memoria.js';
 export { rotasDeFinanceiro } from './http/financeiro.rotas.js';
+
+export { criarObterFinanceiroDoAluno } from './application/obter-financeiro-do-aluno.js';

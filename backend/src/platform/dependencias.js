@@ -1,10 +1,14 @@
 // @ts-check
-import { criarContarAlunos } from '../modules/alunos/application/contar-alunos.js';
-import { criarListarAlunos } from '../modules/alunos/application/listar-alunos.js';
-import { criarObterAluno } from '../modules/alunos/application/obter-aluno.js';
-import { criarObterFinanceiroDoAluno } from '../modules/financeiro/application/obter-financeiro-do-aluno.js';
-import { criarAlunoRepositoryEmMemoria } from '../modules/alunos/index.js';
-import { criarParcelaRepositoryEmMemoria } from '../modules/financeiro/index.js';
+import {
+  criarAlunoRepositoryEmMemoria,
+  criarContarAlunos,
+  criarListarAlunos,
+  criarObterAluno,
+} from '../modules/alunos/index.js';
+import {
+  criarObterFinanceiroDoAluno,
+  criarParcelaRepositoryEmMemoria,
+} from '../modules/financeiro/index.js';
 import { hojeEm } from '../shared/data.js';
 import { carregarSeed } from './seed.js';
 

@@ -1,12 +1,16 @@
+import {
+  criarAlunoRepositoryEmMemoria,
+  criarContarAlunos,
+  criarListarAlunos,
+  criarObterAluno,
+} from '../modules/alunos/index.js';
+import {
+  criarObterFinanceiroDoAluno,
+  criarParcelaRepositoryEmMemoria,
+} from '../modules/financeiro/index.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { criarAlunoRepositoryEmMemoria } from '../modules/alunos/index.js';
-import { criarContarAlunos } from '../modules/alunos/application/contar-alunos.js';
-import { criarListarAlunos } from '../modules/alunos/application/listar-alunos.js';
-import { criarObterAluno } from '../modules/alunos/application/obter-aluno.js';
-import { criarObterFinanceiroDoAluno } from '../modules/financeiro/application/obter-financeiro-do-aluno.js';
-import { criarParcelaRepositoryEmMemoria } from '../modules/financeiro/index.js';
 import { carregarSeed } from './seed.js';
 import { criarServidor } from './servidor.js';
 
