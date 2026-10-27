@@ -1,0 +1,31 @@
+# Dependências
+node_modules/
+
+# Variáveis de ambiente — .env.example É versionado, .env NÃO
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Build
+dist/
+build/
+.vite/
+
+# Testes
+coverage/
+*.lcov
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
