@@ -1,6 +1,6 @@
 # ADR 0002 — Fastify no back-end, React + Vite no front, JavaScript com JSDoc
 
-**Status:** aceito · **Data:** 2026-10-26
+**Status:** aceito · **Data:** 2026-10-26 · **Parcialmente superseded por:** [ADR 0007](0007-shadcn-ui.md)
 
 ## Contexto
 

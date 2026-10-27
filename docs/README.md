@@ -28,6 +28,7 @@ escopo fechado e é referenciado pelos demais por ID de requisito (`RF-xx` /
 | 0004 | Tool use em vez de MCP para o requisito do assistente; MCP como bônus | [ADR](adr/0004-tool-use-em-vez-de-mcp.md) |
 | 0005 | Modo demo compartilha o pipeline real; só a decisão de ferramenta muda | [ADR](adr/0005-modo-demo.md) |
 | 0006 | Situação financeira é derivada das parcelas, nunca persistida | [ADR](adr/0006-situacao-derivada.md) |
+| 0007 | shadcn/ui no front — supersede parcialmente o 0002 | [ADR](adr/0007-shadcn-ui.md) |
 
 ## Convenções destes documentos
 

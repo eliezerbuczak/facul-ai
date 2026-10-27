@@ -38,5 +38,16 @@ jobs:
       - name: Verificar segredos versionados
         run: npm run check:secrets
 
-  # O job do front-end entra junto com feature/frontend, quando houver
-  # package.json e um build para rodar. Ver docs/08 §6.
+  front:
+    name: Front-end — testes e build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --prefix frontend
+      - run: npm test --prefix frontend
+      - run: npm run build --prefix frontend

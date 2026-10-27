@@ -62,6 +62,32 @@ test('matrícula na pergunta escolhe obter_aluno', async () => {
   assert.equal(d.chamadas[0].argumentos.matriculaOuNome, '2023000094');
 });
 
+test('nome próprio com pedido de dados escolhe obter_aluno', async () => {
+  // Visto na interface: "dados da Mariana Rezende" caía no fallback, porque o
+  // classificador só reconhecia aluno por matrícula de dez dígitos.
+  for (const [p, nome] of [
+    ['dados da Mariana Rezende', 'Mariana Rezende'],
+    ['me fala sobre Otávio Siqueira', 'Otávio Siqueira'],
+    ['quem é Helena Marques?', 'Helena Marques'],
+    ['informações sobre Rafael Pinto', 'Rafael Pinto'],
+  ]) {
+    const d = await perguntar(p);
+    assert.equal(d.tipo, 'ferramentas', p);
+    assert.equal(d.chamadas[0].nome, 'obter_aluno', p);
+    assert.equal(d.chamadas[0].argumentos.matriculaOuNome, nome, p);
+  }
+});
+
+test('nome próprio sem pedido de pessoa continua fora do repertório', async () => {
+  // O portão de domínio não pode cair só porque há uma palavra maiúscula:
+  // "a capital da Austrália" não é um pedido sobre aluno.
+  for (const p of ['Qual a capital da Austrália?', 'quem ganhou a Copa de 2002?']) {
+    const d = await perguntar(p);
+    assert.equal(d.tipo, 'resposta', p);
+    assert.match(d.texto, /demonstrativo/i, p);
+  }
+});
+
 test('pergunta fora do repertório responde sem inventar e sem chamar ferramenta', async () => {
   const d = await perguntar('qual a capital da Austrália?');
   assert.equal(d.tipo, 'resposta');

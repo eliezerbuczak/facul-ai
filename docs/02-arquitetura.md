@@ -221,6 +221,6 @@ entre modo real e modo demo é unicamente quem produz a `Decisao`. Doc 05 §4.
 | TypeScript | Ver ADR 0002. JSDoc + `checkJs` dá verificação de tipos sem etapa de build no back-end |
 | ORM (Prisma, TypeORM) | Duas tabelas e cinco consultas. SQL direto com `mysql2` é menor, mais explícito e não esconde o N+1 |
 | Biblioteca de estado no front (Redux, Zustand) | Uma tela, estado local resolve |
-| Biblioteca de UI | O enunciado dispensa layout sofisticado |
+| ~~Biblioteca de UI~~ | Revisto — ver [ADR 0007](adr/0007-shadcn-ui.md). O front usa shadcn/ui, que copia o código para dentro do projeto em vez de ser dependência de runtime |
 | Monorepo com workspaces | Dois pacotes não justificam a camada de ferramental |
 | Testes E2E | O enunciado pede testes unitários da regra financeira; E2E seria escopo além do pedido, e sem valor proporcional ao tempo |

@@ -23,6 +23,40 @@ const FALLBACK =
 const DOMINIO =
   /alun|estudante|matricul|curso|mensalidade|parcela|financeir|inadimplen|adimplen|pagament|divida|devendo|\bdeve\b|tranca|cancel|formad|formar|\bativ|em dia|quitad|em aberto|turma|situacao/;
 
+/**
+ * Pedido explícito por uma pessoa. Combinado com um nome próprio, serve como
+ * sinal de domínio: "dados da Mariana Rezende" é sobre aluno; "a capital da
+ * Austrália" tem nome próprio e não é.
+ */
+const PEDIDO_DE_PESSOA = /\b(dados|informacao|informacoes|ficha|sobre|quem e)\b/;
+
+const PALAVRA_CAPITALIZADA = /^[A-ZÁÀÂÃÉÊÍÓÔÕÚÜÇ][a-záàâãéêíóôõúüç']+$/u;
+
+/**
+ * Maior sequência de palavras capitalizadas da pergunta, ignorando a primeira
+ * palavra — toda frase começa com maiúscula e isso não informa nada.
+ *
+ * @param {string} pergunta
+ * @returns {string|null}
+ */
+function nomeProprioEm(pergunta) {
+  const palavras = pergunta.replace(/[?!.,;:]/g, '').split(/\s+/);
+  const encontrados = [];
+  let atual = [];
+
+  palavras.forEach((palavra, i) => {
+    if (i > 0 && PALAVRA_CAPITALIZADA.test(palavra)) {
+      atual.push(palavra);
+      return;
+    }
+    if (atual.length > 0) encontrados.push(atual.join(' '));
+    atual = [];
+  });
+  if (atual.length > 0) encontrados.push(atual.join(' '));
+
+  return encontrados.sort((a, b) => b.length - a.length)[0] ?? null;
+}
+
 const STATUS_POR_TERMO = [
   [/\bativ/, 'ATIVO'],
   [/tranca/, 'TRANCADO'],
@@ -83,9 +117,11 @@ function classificar(pergunta) {
     /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i,
   );
   const matriculaBruta = pergunta.match(/\b\d{10}\b/);
+  const nomeProprio = PEDIDO_DE_PESSOA.test(t) ? nomeProprioEm(pergunta) : null;
 
-  // Matrícula ou id na pergunta já são sinal de domínio por si sós.
-  if (!DOMINIO.test(t) && !idEmFocoBruto && !matriculaBruta) return null;
+  // Matrícula, id, ou um nome próprio pedido explicitamente já são sinal de
+  // domínio por si sós.
+  if (!DOMINIO.test(t) && !idEmFocoBruto && !matriculaBruta && !nomeProprio) return null;
 
   const status = STATUS_POR_TERMO.find(([re]) => re.test(t))?.[1] ?? null;
   const idEmFoco = idEmFocoBruto?.[0];
@@ -129,11 +165,11 @@ function classificar(pergunta) {
       argumentos: { alunoId: idEmFoco },
     };
   }
-  if (matricula) {
+  if (matricula || nomeProprio) {
     return {
       id: proximoId(),
       nome: 'obter_aluno',
-      argumentos: { matriculaOuNome: matricula },
+      argumentos: { matriculaOuNome: matricula ?? nomeProprio },
     };
   }
   if (status) {
