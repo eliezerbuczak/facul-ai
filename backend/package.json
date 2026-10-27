@@ -13,5 +13,9 @@
     "test": "node --test",
     "test:watch": "node --test --watch",
     "test:cov": "node --test --experimental-test-coverage"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.3.1",
+    "fastify": "^5.12.7"
   }
 }
