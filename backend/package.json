@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "API REST de gestão acadêmica — monolito modular.",
+  "description": "API REST de gest\u00e3o acad\u00eamica \u2014 monolito modular.",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
+    "predev": "node scripts/garantir-env.js",
     "dev": "node --watch --env-file-if-exists=../.env src/main.js",
     "start": "node --env-file-if-exists=../.env src/main.js",
     "test": "node --test",
