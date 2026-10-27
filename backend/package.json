@@ -1,0 +1,17 @@
+{
+  "name": "@facul-ai/backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "API REST de gestão acadêmica — monolito modular.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=../.env src/main.js",
+    "start": "node --env-file-if-exists=../.env src/main.js",
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "test:cov": "node --test --experimental-test-coverage"
+  }
+}

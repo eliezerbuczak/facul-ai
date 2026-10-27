@@ -30,17 +30,19 @@ de testes existe mas `--env-file` não.
 ```bash
 git clone <repo> && cd facul-ai
 
-# Back-end
-cd backend
-cp .env.example .env
-npm install
-npm run dev          # http://localhost:3000
+npm install                       # ferramental: lint, formatação, hooks de commit
+npm install --prefix backend
+npm run dev --prefix backend      # http://localhost:3000
 
 # Front-end (outro terminal)
-cd ../frontend
-npm install
-npm run dev          # http://localhost:5173
+npm install --prefix frontend
+npm run dev --prefix frontend     # http://localhost:5173
 ```
+
+Copiar o `.env` é **opcional** — todo valor tem padrão sensato e o back-end usa
+`--env-file-if-exists`. Para customizar: `cp .env.example .env` na raiz. Existe
+**um único** `.env`, na raiz: o back-end lê `../.env` e o docker compose lê o
+mesmo arquivo, sem duplicação.
 
 Sem `ANTHROPIC_API_KEY` no `.env`, o assistente sobe em **modo demonstrativo** e
 anuncia isso em `GET /api/health` e em cada resposta. Nada falha (RF-08).
@@ -176,22 +178,41 @@ JavaScript servido ao navegador — colocar uma chave ali a publica (RNF-03).
 
 ## 5. Scripts
 
+Lint, formatação e hooks ficam na **raiz**, não em `backend/`. Dois motivos
+concretos, ambos descobertos ao implementar: o husky precisa morar na raiz do
+repositório git, e o ESLint 9 resolve `eslint.config.js` a partir do diretório
+de trabalho — com a config dentro de `backend/`, o `lint-staged` rodando da raiz
+não a encontraria. Uma config na raiz, com escopo por `files:`, resolve os dois.
+
+### Raiz — `package.json`
+
+| Script | Comando | Para quê |
+|---|---|---|
+| `lint` | `eslint .` | Inclui as regras de fronteira entre módulos |
+| `lint:fix` | `eslint . --fix` | Correção automática |
+| `format` | `prettier --write .` | Formatação de código (markdown fica de fora) |
+| `format:check` | `prettier --check .` | Verificação sem escrita, usada no CI |
+| `test` | `npm test --prefix backend` | Delega para o back-end |
+| `check` | lint + format:check + test + check:secrets | Portão único, usado no pre-push |
+| `check:secrets` | `bash scripts/verificar-segredos.sh` | Falha se achar chave versionada |
+| `prepare` | `husky` | Instala os hooks após `npm install` |
+
 ### `backend/package.json`
 
 | Script | Comando | Para quê |
 |---|---|---|
-| `dev` | `node --watch --env-file=.env src/main.js` | Servidor com reload nativo |
-| `start` | `node --env-file=.env src/main.js` | Execução sem watch |
+| `dev` | `node --watch --env-file-if-exists=../.env src/main.js` | Servidor com reload nativo |
+| `start` | `node --env-file-if-exists=../.env src/main.js` | Execução sem watch |
 | `test` | `node --test` | Suíte completa |
 | `test:watch` | `node --test --watch` | Loop de TDD |
 | `test:cov` | `node --test --experimental-test-coverage` | Relatório de cobertura |
-| `lint` | `eslint .` | Lint, inclui as regras de fronteira entre módulos |
-| `format` | `prettier --write .` | Formatação |
-| `check` | `npm run lint && npm test` | Portão único, usado pelo hook de pre-push |
-| `check:secrets` | `grep -rE "sk-ant-[A-Za-z0-9_-]{20,}" ...` | Falha se achar chave versionada |
 | `db:migrate` | `node scripts/migrar.js` | Aplica `migrations/*.sql` |
 | `db:seed` | `node scripts/semear.js` | Carrega `seed/dados.json` no MySQL |
 | `seed:gerar` | `node scripts/gerar-seed.js` | Regenera o seed com datas relativas a hoje |
+
+> `--env-file-if-exists` em vez de `--env-file`: sem ele, um clone sem `.env`
+> falha na inicialização. Com ele, `npm install && npm run dev` funciona direto
+> no clone limpo, que é o requisito RNF-07.
 
 ### `frontend/package.json`
 
@@ -200,8 +221,6 @@ JavaScript servido ao navegador — colocar uma chave ali a publica (RNF-03).
 | `dev` | `vite` |
 | `build` | `vite build` |
 | `preview` | `vite preview` |
-| `lint` | `eslint .` |
-| `test` | `node --test` |
 
 Sem `nodemon`, `dotenv`, `jest`, `vitest` ou `ts-node`. Node 22 cobre watch,
 `.env` e testes. Menos dependência é menos superfície para quebrar entre a

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  verificar:
+    name: Lint, formatação, testes e segredos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+
+      - name: Instalar ferramental da raiz
+        run: npm ci --ignore-scripts
+
+      - name: Instalar back-end
+        run: npm ci --prefix backend
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Formatação
+        run: npm run format:check
+
+      - name: Testes
+        run: npm test
+
+      - name: Verificar segredos versionados
+        run: npm run check:secrets
+
+  # O job do front-end entra junto com feature/frontend, quando houver
+  # package.json e um build para rodar. Ver docs/08 §6.
