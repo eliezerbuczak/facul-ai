@@ -9,7 +9,7 @@ diferencial que não pode ser pré-requisito.
 | Caminho | Comando | Persistência | Requer |
 |---|---|---|---|
 | **A — local** *(padrão)* | `npm run dev` | memória, a partir do seed JSON | Node ≥ 22 |
-| **B — Docker** | `docker compose up` | MySQL 8.4 | Docker + Compose |
+| ~~**B — Docker**~~ | `docker compose up` | MySQL 8.4 | **não implementado** — ver §3 |
 
 Os dois servem exatamente os mesmos dados (doc 03 §4) e passam a mesma suíte.
 
@@ -48,6 +48,11 @@ Sem `ANTHROPIC_API_KEY` no `.env`, o assistente sobe em **modo demonstrativo** e
 anuncia isso em `GET /api/health` e em cada resposta. Nada falha (RF-08).
 
 ## 3. Caminho B — Docker com MySQL
+
+> **Não implementado.** Não existe `docker-compose.yml` no repositório. O
+> que segue é o desenho previsto. O caminho A é o único que roda hoje, e é o
+> que o README documenta.
+
 
 ```bash
 cp .env.example .env
