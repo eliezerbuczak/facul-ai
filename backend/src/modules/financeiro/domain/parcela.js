@@ -40,11 +40,20 @@ export function criarParcela(dados) {
 }
 
 /**
+ * Uma parcela só está quitada quando o pagamento cobre o valor devido.
+ *
+ * `pagoEm` preenchido não basta: um pagamento parcial registra a data e deixa
+ * saldo em aberto. Tratar isso como quitação é a causa-raiz C de docs/06 §2.
+ *
+ * Não se olha se `pagoEm` é posterior ao vencimento. Atraso é fato histórico;
+ * a pergunta respondida aqui é se há saldo em aberto hoje (caso 5).
+ *
  * @param {Parcela} parcela
  * @returns {boolean}
  */
 export function estaQuitada(parcela) {
-  return parcela.pagoEm !== null;
+  if (parcela.pagoEm === null || parcela.valorPagoCentavos === null) return false;
+  return parcela.valorPagoCentavos >= parcela.valorCentavos;
 }
 
 /**
