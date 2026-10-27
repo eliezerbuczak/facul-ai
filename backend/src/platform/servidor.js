@@ -5,6 +5,7 @@ import cors from '@fastify/cors';
 import Fastify from 'fastify';
 
 import { rotasDeAlunos } from '../modules/alunos/index.js';
+import { rotasDeAssistente } from '../modules/assistente/index.js';
 import { rotasDeFinanceiro } from '../modules/financeiro/index.js';
 import { registrarTratamentoDeErros } from './tratador-de-erros.js';
 
@@ -21,6 +22,19 @@ import { registrarTratamentoDeErros } from './tratador-de-erros.js';
 export async function criarServidor({ config, casosDeUso }) {
   const app = Fastify({
     logger: { level: config.logLevel },
+    ajv: {
+      customOptions: {
+        // O padrão do Fastify é removeAdditional: true, que faz
+        // `additionalProperties: false` DESCARTAR o campo extra em silêncio em
+        // vez de recusar a requisição. Num endpoint que recebe prompt, aceitar
+        // calado um campo que o cliente achou que estava enviando é pior que
+        // devolver 400 — o erro de integração só apareceria em produção.
+        removeAdditional: false,
+        coerceTypes: 'array',
+        useDefaults: true,
+        allErrors: false,
+      },
+    },
     // O padrão do Fastify é um contador por processo ("req-1"), que colide
     // entre reinícios e entre instâncias. UUID correlaciona de verdade.
     genReqId: () => randomUUID(),
@@ -44,6 +58,7 @@ export async function criarServidor({ config, casosDeUso }) {
 
   await app.register(rotasDeAlunos(casosDeUso), { prefix: '/api' });
   await app.register(rotasDeFinanceiro(casosDeUso), { prefix: '/api' });
+  await app.register(rotasDeAssistente(casosDeUso), { prefix: '/api' });
 
   return app;
 }
