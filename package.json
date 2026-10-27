@@ -1,0 +1,40 @@
+{
+  "name": "facul-ai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Ferramental compartilhado do repositório: lint, formatação e hooks de commit. Não é um workspace — backend/ e frontend/ declaram as próprias dependências.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm test --prefix backend",
+    "check": "npm run lint && npm run format:check && npm test && npm run check:secrets",
+    "check:secrets": "bash scripts/verificar-segredos.sh"
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^15.14.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
+    "prettier": "^3.4.2"
+  }
+}

@@ -1,0 +1,17 @@
+node_modules/
+coverage/
+dist/
+build/
+package-lock.json
+
+# Markdown fica de fora deliberadamente.
+# O Prettier alinha tabelas preenchendo até a célula mais larga, o que produz
+# linhas de 300+ caracteres nas tabelas de prosa de docs/ — pior de editar e
+# ruidoso em diff, sem mudar nada no que o GitHub renderiza.
+# Formatação de código continua automatizada; prosa fica com o autor.
+*.md
+
+# Componentes vendorizados do shadcn: código de terceiro copiado para dentro
+# do projeto. Reformatar quebraria o diff contra o upstream na hora de
+# atualizar um componente. Mesma razão pela qual ficam fora do ESLint.
+frontend/src/components/ui/

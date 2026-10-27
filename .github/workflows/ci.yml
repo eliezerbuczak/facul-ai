@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  verificar:
+    name: Lint, formatação, testes e segredos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+
+      - name: Instalar ferramental da raiz
+        run: npm ci --ignore-scripts
+
+      - name: Instalar back-end
+        run: npm ci --prefix backend
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Formatação
+        run: npm run format:check
+
+      - name: Testes
+        run: npm test
+
+      - name: Verificar segredos versionados
+        run: npm run check:secrets
+
+      # Guarda-corpo para uma classe de bug que os testes não pegam: a suíte
+      # inteira passava enquanto `npm run dev` — o comando do README —
+      # quebrava num clone sem .env. O CI roda sobre um clone sem .env, que é
+      # exatamente o cenário.
+      - name: Smoke — a aplicação sobe num clone limpo
+        run: |
+          npm run dev --prefix backend > /tmp/dev.log 2>&1 &
+          DEV_PID=$!
+          for _ in $(seq 1 40); do
+            curl -sf localhost:3000/api/health -o /tmp/health.json && break
+            sleep 0.5
+          done
+          kill $DEV_PID 2>/dev/null || true
+          if ! grep -q '"status":"ok"' /tmp/health.json 2>/dev/null; then
+            echo "A aplicação não respondeu. Log:"; cat /tmp/dev.log; exit 1
+          fi
+          echo "subiu e respondeu:"; cat /tmp/health.json
+
+  front:
+    name: Front-end — testes e build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --prefix frontend
+      - run: npm test --prefix frontend
+      - run: npm run build --prefix frontend
