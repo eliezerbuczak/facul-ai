@@ -226,8 +226,26 @@ sozinho.
 dependências de teste.
 
 **Ordem (TDD, red-green-refactor):** esta é a primeira coisa implementada no
-projeto, antes de qualquer rota, repositório ou componente. A ordem dos commits
-é 1 → 11, cada um vermelho antes de verde.
+projeto, antes de qualquer rota, repositório ou componente.
+
+Os ciclos são agrupados por **comportamento**, não um por caso: um par
+vermelho-verde para cada um dos 11 casos daria 22 commits para uma função de 20
+linhas, o que é cerimônia e não disciplina. Cada ciclo abaixo tem um vermelho
+real, causado por uma lacuna genuína da implementação anterior:
+
+| Ciclo | Casos | O que o vermelho forçou |
+|---|---|---|
+| 1 | 1, 2, 4, 6, 9 | A regra base — o módulo não existia |
+| 2 | 7, 10, 11 | Quitação exige `valorPago >= valor`; `pagoEm !== null` não basta |
+| 3 | 3, 5, 8 | Derivar `hoje` pelo fuso em vez de comparar instantes UTC |
+| 4 | I1–I4, P1–P6 | Validação das invariantes na construção da entidade |
+
+**Nem todo caso produz vermelho, e isso fica registrado em vez de encenado.** Os
+casos 3, 5, 10 e 11 passaram assim que foram escritos, contra a implementação
+que já existia. Entram como proteção de regressão: o valor deles é travar o
+comportamento e documentar por que ele é assim, não dirigir código novo.
+Escrever uma implementação deliberadamente errada só para fabricar um vermelho
+seria teatro, não TDD.
 
 **Forma de cada teste** — curtos, uma asserção, sem setup compartilhado:
 
