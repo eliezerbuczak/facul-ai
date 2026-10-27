@@ -45,6 +45,34 @@ test('I4: valor pago zerado com data de pagamento é rejeitado', () => {
   );
 });
 
+test('id e alunoId não podem ser vazios', () => {
+  assert.throws(() => criarParcela({ ...VALIDA, id: '' }), ErroDeDominio);
+  assert.throws(() => criarParcela({ ...VALIDA, id: '   ' }), ErroDeDominio);
+  assert.throws(() => criarParcela({ ...VALIDA, alunoId: '' }), ErroDeDominio);
+});
+
+test('competência precisa estar no formato YYYY-MM', () => {
+  assert.throws(() => criarParcela({ ...VALIDA, competencia: '2026' }), ErroDeDominio);
+  assert.throws(
+    () => criarParcela({ ...VALIDA, competencia: '2026-09-10' }),
+    ErroDeDominio,
+  );
+});
+
+test('data de pagamento precisa estar no formato YYYY-MM-DD', () => {
+  assert.throws(
+    () => criarParcela({ ...VALIDA, pagoEm: '08/09/2026', valorPagoCentavos: 125_000 }),
+    ErroDeDominio,
+  );
+});
+
+test('valor pago fracionário é rejeitado — centavos são inteiros', () => {
+  assert.throws(
+    () => criarParcela({ ...VALIDA, pagoEm: '2026-09-08', valorPagoCentavos: 1250.5 }),
+    ErroDeDominio,
+  );
+});
+
 test('vencimento precisa estar no formato YYYY-MM-DD', () => {
   assert.throws(
     () => criarParcela({ ...VALIDA, vencimento: '10/09/2026' }),
