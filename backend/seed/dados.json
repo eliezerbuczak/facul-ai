@@ -1,0 +1,184 @@
+{
+  "_comentario": [
+    "Dados fictícios. Nenhum dado pessoal real.",
+    "Datas são DESLOCAMENTOS EM DIAS a partir de hoje, resolvidos na carga por",
+    "platform/seed.js. Datas absolutas apodreceriam: o perfil 'vence hoje'",
+    "deixaria de demonstrar o que afirma no dia seguinte à geração.",
+    "A competência de cada parcela é derivada do mês do vencimento.",
+    "Cada aluno tem 'demonstra', que amarra o perfil ao caso de docs/06 §3."
+  ],
+  "alunos": [
+    {
+      "id": "578645ee-7789-4e1e-b7ab-7c9048037759",
+      "nome": "Helena Marques",
+      "matricula": "2024000137",
+      "curso": "Engenharia de Software",
+      "status": "ATIVO",
+      "ingressoEmDias": -980,
+      "demonstra": "caso 2 — todas as parcelas quitadas em dia",
+      "situacaoEsperada": "ADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 125000, "vencimentoEmDias": -70, "pagoEmDias": -72 },
+        { "valorCentavos": 125000, "vencimentoEmDias": -40, "pagoEmDias": -43 },
+        { "valorCentavos": 125000, "vencimentoEmDias": -10, "pagoEmDias": -12 }
+      ]
+    },
+    {
+      "id": "2f708409-7d51-4af1-ab7a-4c921525dcd4",
+      "nome": "Rafael Pinto",
+      "matricula": "2023000094",
+      "curso": "Direito",
+      "status": "ATIVO",
+      "ingressoEmDias": -1340,
+      "demonstra": "caso 4 — parcela vencida há 40 dias, em aberto",
+      "situacaoEsperada": "INADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 98000, "vencimentoEmDias": -70, "pagoEmDias": -71 },
+        { "valorCentavos": 98000, "vencimentoEmDias": -40, "pagoEmDias": null },
+        { "valorCentavos": 98000, "vencimentoEmDias": 20, "pagoEmDias": null }
+      ]
+    },
+    {
+      "id": "00358be8-3e54-4281-815a-7d86d5f33783",
+      "nome": "Thaís Vasconcelos",
+      "matricula": "2025000211",
+      "curso": "Medicina Veterinária",
+      "status": "ATIVO",
+      "ingressoEmDias": -260,
+      "demonstra": "caso 3 — vence HOJE e não foi paga; vencer hoje não é estar vencido",
+      "situacaoEsperada": "ADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 189000, "vencimentoEmDias": -30, "pagoEmDias": -31 },
+        { "valorCentavos": 189000, "vencimentoEmDias": 0, "pagoEmDias": null }
+      ]
+    },
+    {
+      "id": "8e96ed14-7751-4872-aa21-27f9f11f03c0",
+      "nome": "José Antônio Nóbrega",
+      "matricula": "2022000058",
+      "curso": "Administração",
+      "status": "ATIVO",
+      "ingressoEmDias": -1620,
+      "demonstra": "caso 5 — parcela paga com atraso; atraso passado não é inadimplência atual",
+      "situacaoEsperada": "ADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 87000, "vencimentoEmDias": -60, "pagoEmDias": -18 },
+        { "valorCentavos": 87000, "vencimentoEmDias": -30, "pagoEmDias": -29 }
+      ]
+    },
+    {
+      "id": "7d2d3a98-ea41-4cee-ad3c-b89ea2ae4ca6",
+      "nome": "Luís Felipe Gonçalves",
+      "matricula": "2023000176",
+      "curso": "Arquitetura e Urbanismo",
+      "status": "TRANCADO",
+      "ingressoEmDias": -1180,
+      "demonstra": "status acadêmico é independente da situação financeira",
+      "situacaoEsperada": "INADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 142000, "vencimentoEmDias": -95, "pagoEmDias": null },
+        { "valorCentavos": 142000, "vencimentoEmDias": -65, "pagoEmDias": null }
+      ]
+    },
+    {
+      "id": "c468f4af-f875-43d1-8d87-a39717b00ac0",
+      "nome": "Beatriz Camargo",
+      "matricula": "2021000042",
+      "curso": "Pedagogia",
+      "status": "FORMADO",
+      "ingressoEmDias": -1910,
+      "demonstra": "o mesmo pelo lado oposto: formado e quitado",
+      "situacaoEsperada": "ADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 76000, "vencimentoEmDias": -420, "pagoEmDias": -425 },
+        { "valorCentavos": 76000, "vencimentoEmDias": -390, "pagoEmDias": -392 }
+      ]
+    },
+    {
+      "id": "832926ec-fc69-42a7-9d26-c81d8c2f95d3",
+      "nome": "Otávio Siqueira",
+      "matricula": "2024000309",
+      "curso": "Ciência da Computação",
+      "status": "ATIVO",
+      "ingressoEmDias": -620,
+      "demonstra": "caso 7 — pagamento parcial de parcela vencida não quita",
+      "situacaoEsperada": "INADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 134000, "vencimentoEmDias": -50, "pagoEmDias": -51 },
+        {
+          "valorCentavos": 134000,
+          "vencimentoEmDias": -20,
+          "pagoEmDias": -20,
+          "valorPagoCentavos": 10000
+        }
+      ]
+    },
+    {
+      "id": "a30467ba-3eb2-4e7f-a3cc-55bbe93c6b0c",
+      "nome": "Mariana Rezende",
+      "matricula": "2025000087",
+      "curso": "Psicologia",
+      "status": "ATIVO",
+      "ingressoEmDias": -190,
+      "demonstra": "caso 6 — apenas parcelas futuras em aberto",
+      "situacaoEsperada": "ADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 112000, "vencimentoEmDias": 15, "pagoEmDias": null },
+        { "valorCentavos": 112000, "vencimentoEmDias": 45, "pagoEmDias": null }
+      ]
+    },
+    {
+      "id": "3cc46b65-9239-42e8-bf24-8423b8c70758",
+      "nome": "Caio Bertoldo",
+      "matricula": "2022000415",
+      "curso": "Jornalismo",
+      "status": "CANCELADO",
+      "ingressoEmDias": -1450,
+      "demonstra": "caso 1 — nenhuma parcela registrada",
+      "situacaoEsperada": "ADIMPLENTE",
+      "parcelas": []
+    },
+    {
+      "id": "bb9e57be-380e-43b3-b681-a467ca278e41",
+      "nome": "Fernanda D'Ávila",
+      "matricula": "2024000162",
+      "curso": "Nutrição",
+      "status": "ATIVO",
+      "ingressoEmDias": -880,
+      "demonstra": "volume e busca com acento e apóstrofo",
+      "situacaoEsperada": "ADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 94000, "vencimentoEmDias": -35, "pagoEmDias": -36 },
+        { "valorCentavos": 94000, "vencimentoEmDias": 25, "pagoEmDias": null }
+      ]
+    },
+    {
+      "id": "4281c830-54c7-4071-afa6-f1b6b560f045",
+      "nome": "Gustavo Nakamura",
+      "matricula": "2023000238",
+      "curso": "Engenharia Civil",
+      "status": "TRANCADO",
+      "ingressoEmDias": -1050,
+      "demonstra": "volume e filtro por status",
+      "situacaoEsperada": "ADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 156000, "vencimentoEmDias": -80, "pagoEmDias": -82 }
+      ]
+    },
+    {
+      "id": "ef733fa5-fab7-4386-b201-4de34092ae94",
+      "nome": "Letícia Albuquerque",
+      "matricula": "2025000130",
+      "curso": "Fisioterapia",
+      "status": "ATIVO",
+      "ingressoEmDias": -240,
+      "demonstra": "caso 9 — mais de uma parcela vencida",
+      "situacaoEsperada": "INADIMPLENTE",
+      "parcelas": [
+        { "valorCentavos": 103000, "vencimentoEmDias": -75, "pagoEmDias": null },
+        { "valorCentavos": 103000, "vencimentoEmDias": -45, "pagoEmDias": null },
+        { "valorCentavos": 103000, "vencimentoEmDias": -15, "pagoEmDias": -16 }
+      ]
+    }
+  ]
+}

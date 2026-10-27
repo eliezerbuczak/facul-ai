@@ -1,5 +1,11 @@
 // @ts-check
 import { ErroDeDominio } from '../../../shared/erros.js';
+import {
+  FORMATO,
+  exigirFormato,
+  exigirInteiroPositivo,
+  exigirTextoNaoVazio,
+} from '../../../shared/validacao.js';
 
 /** @typedef {'PAGA'|'VENCIDA'|'A_VENCER'} SituacaoParcela */
 
@@ -14,40 +20,7 @@ import { ErroDeDominio } from '../../../shared/erros.js';
  * @property {number|null} valorPagoCentavos
  */
 
-const ISO_DATA = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_COMPETENCIA = /^\d{4}-\d{2}$/;
-
-/**
- * @param {unknown} valor
- * @param {string} campo
- */
-function exigirTextoNaoVazio(valor, campo) {
-  if (typeof valor !== 'string' || valor.trim() === '') {
-    throw new ErroDeDominio(`${campo} deve ser um texto não vazio.`, { campo });
-  }
-}
-
-/**
- * @param {unknown} valor
- * @param {string} campo
- * @param {RegExp} formato
- * @param {string} exemplo
- */
-function exigirFormato(valor, campo, formato, exemplo) {
-  if (typeof valor !== 'string' || !formato.test(valor)) {
-    throw new ErroDeDominio(`${campo} deve estar no formato ${exemplo}.`, { campo });
-  }
-}
-
-/**
- * @param {unknown} valor
- * @param {string} campo
- */
-function exigirInteiroPositivo(valor, campo) {
-  if (!Number.isInteger(valor) || /** @type {number} */ (valor) <= 0) {
-    throw new ErroDeDominio(`${campo} deve ser um inteiro maior que zero.`, { campo });
-  }
-}
 
 /**
  * Constrói uma parcela válida e imutável.
@@ -75,7 +48,7 @@ export function criarParcela(dados) {
   exigirTextoNaoVazio(id, 'id');
   exigirTextoNaoVazio(alunoId, 'alunoId');
   exigirFormato(competencia, 'competencia', ISO_COMPETENCIA, 'YYYY-MM');
-  exigirFormato(vencimento, 'vencimento', ISO_DATA, 'YYYY-MM-DD');
+  exigirFormato(vencimento, 'vencimento', FORMATO.DATA_ISO, 'YYYY-MM-DD');
   exigirInteiroPositivo(valorCentavos, 'valorCentavos');
 
   if (pagoEm === null && valorPagoCentavos !== null) {
@@ -84,7 +57,7 @@ export function criarParcela(dados) {
     });
   }
   if (pagoEm !== null) {
-    exigirFormato(pagoEm, 'pagoEm', ISO_DATA, 'YYYY-MM-DD');
+    exigirFormato(pagoEm, 'pagoEm', FORMATO.DATA_ISO, 'YYYY-MM-DD');
     if (valorPagoCentavos === null) {
       throw new ErroDeDominio('pagoEm exige valorPagoCentavos preenchido.', {
         campo: 'valorPagoCentavos',

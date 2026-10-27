@@ -29,3 +29,22 @@ export function hojeEm(fuso = FUSO_PADRAO, agora = new Date()) {
   const por = Object.fromEntries(partes.map(({ type, value }) => [type, value]));
   return `${por.year}-${por.month}-${por.day}`;
 }
+
+/**
+ * Soma (ou subtrai) dias a uma data ISO, devolvendo outra data ISO.
+ *
+ * Toda a aritmética acontece em UTC. Usar o fuso local aqui reintroduziria
+ * exatamente o problema que `hojeEm` resolve: em um fuso com horário de verão,
+ * somar 24 h a uma data pode cair no mesmo dia ou pular um.
+ *
+ * @param {string} dataIso  'YYYY-MM-DD'
+ * @param {number} dias     positivo para frente, negativo para trás
+ * @returns {string} 'YYYY-MM-DD'
+ */
+export function deslocarDias(dataIso, dias) {
+  const [ano, mes, dia] = dataIso.split('-').map(Number);
+  const alvo = new Date(Date.UTC(ano, mes - 1, dia) + dias * 86_400_000);
+  const mm = String(alvo.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(alvo.getUTCDate()).padStart(2, '0');
+  return `${alvo.getUTCFullYear()}-${mm}-${dd}`;
+}
