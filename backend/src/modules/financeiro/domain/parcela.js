@@ -1,4 +1,5 @@
 // @ts-check
+import { ErroDeDominio } from '../../../shared/erros.js';
 
 /** @typedef {'PAGA'|'VENCIDA'|'A_VENCER'} SituacaoParcela */
 
@@ -13,9 +14,52 @@
  * @property {number|null} valorPagoCentavos
  */
 
+const ISO_DATA = /^\d{4}-\d{2}-\d{2}$/;
+const ISO_COMPETENCIA = /^\d{4}-\d{2}$/;
+
 /**
+ * @param {unknown} valor
+ * @param {string} campo
+ */
+function exigirTextoNaoVazio(valor, campo) {
+  if (typeof valor !== 'string' || valor.trim() === '') {
+    throw new ErroDeDominio(`${campo} deve ser um texto não vazio.`, { campo });
+  }
+}
+
+/**
+ * @param {unknown} valor
+ * @param {string} campo
+ * @param {RegExp} formato
+ * @param {string} exemplo
+ */
+function exigirFormato(valor, campo, formato, exemplo) {
+  if (typeof valor !== 'string' || !formato.test(valor)) {
+    throw new ErroDeDominio(`${campo} deve estar no formato ${exemplo}.`, { campo });
+  }
+}
+
+/**
+ * @param {unknown} valor
+ * @param {string} campo
+ */
+function exigirInteiroPositivo(valor, campo) {
+  if (!Number.isInteger(valor) || /** @type {number} */ (valor) <= 0) {
+    throw new ErroDeDominio(`${campo} deve ser um inteiro maior que zero.`, { campo });
+  }
+}
+
+/**
+ * Constrói uma parcela válida e imutável.
+ *
+ * A invariante que importa: `pagoEm` e `valorPagoCentavos` são preenchidos
+ * juntos ou nenhum dos dois. Um sem o outro é o estado inconsistente que
+ * alimenta a causa-raiz C de docs/06 §2, e por isso é barrado aqui e também
+ * por CHECK no banco (docs/03 §3) — defesa em profundidade.
+ *
  * @param {Parcela} dados
  * @returns {Parcela}
+ * @throws {ErroDeDominio}
  */
 export function criarParcela(dados) {
   const {
@@ -27,6 +71,27 @@ export function criarParcela(dados) {
     pagoEm = null,
     valorPagoCentavos = null,
   } = dados;
+
+  exigirTextoNaoVazio(id, 'id');
+  exigirTextoNaoVazio(alunoId, 'alunoId');
+  exigirFormato(competencia, 'competencia', ISO_COMPETENCIA, 'YYYY-MM');
+  exigirFormato(vencimento, 'vencimento', ISO_DATA, 'YYYY-MM-DD');
+  exigirInteiroPositivo(valorCentavos, 'valorCentavos');
+
+  if (pagoEm === null && valorPagoCentavos !== null) {
+    throw new ErroDeDominio('valorPagoCentavos exige pagoEm preenchido.', {
+      campo: 'pagoEm',
+    });
+  }
+  if (pagoEm !== null) {
+    exigirFormato(pagoEm, 'pagoEm', ISO_DATA, 'YYYY-MM-DD');
+    if (valorPagoCentavos === null) {
+      throw new ErroDeDominio('pagoEm exige valorPagoCentavos preenchido.', {
+        campo: 'valorPagoCentavos',
+      });
+    }
+    exigirInteiroPositivo(valorPagoCentavos, 'valorPagoCentavos');
+  }
 
   return Object.freeze({
     id,
