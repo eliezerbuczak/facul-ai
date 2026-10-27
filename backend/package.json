@@ -1,6 +1,6 @@
 {
   "name": "@facul-ai/backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "description": "API REST de gest\u00e3o acad\u00eamica \u2014 monolito modular.",
