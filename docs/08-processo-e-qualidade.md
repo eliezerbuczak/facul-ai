@@ -66,8 +66,12 @@ não depende de nenhuma outra.
 **Tipos:** `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `build`, `ci`,
 `style`, `perf`.
 
-**Escopos:** `alunos`, `financeiro`, `assistente`, `web`, `infra`, `docs`,
-`deps`.
+**Escopos:** `alunos`, `financeiro`, `assistente`, `web`, `infra`, `specs`,
+`adr`, `readme`, `deps`.
+
+`docs` não é escopo — já é tipo, e `docs(docs):` não diz nada. Mudança em
+documentação usa o tipo `docs` com o escopo da área: `docs(specs)`, `docs(adr)`,
+`docs(readme)`.
 
 Exemplos reais deste projeto:
 
@@ -187,7 +191,7 @@ back-end.
 
 ## 6. CI
 
-GitHub Actions, um workflow, acionado em push para `develop`/`main` e em todo PR:
+GitHub Actions, um job, acionado em push para `develop`/`main` e em todo PR:
 
 ```yaml
 jobs:
@@ -197,17 +201,24 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '22', cache: npm }
+      - run: npm ci --ignore-scripts        # ferramental da raiz
       - run: npm ci --prefix backend
-      - run: npm run lint --prefix backend
-      - run: npm test --prefix backend
-      - run: npm run check:secrets --prefix backend
-      - run: npm ci --prefix frontend
-      - run: npm run lint --prefix frontend
-      - run: npm run build --prefix frontend
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run check:secrets
 ```
 
-`check:secrets` no CI é o que transforma "não comitar a chave" de intenção em
-garantia verificada (RNF-03).
+`--ignore-scripts` na instalação da raiz pula o `prepare: husky` — hooks de git
+não têm função no CI e o husky falharia sem um `.git` utilizável.
+
+`check:secrets` é o que transforma "não comitar a chave" de intenção em garantia
+verificada (RNF-03). Ele usa `git grep`, então varre apenas arquivos rastreados:
+um `.env` local nunca entra na busca.
+
+O job do front-end entra junto com `feature/frontend`, quando existir um
+`package.json` e um build para rodar. Adicionar passos de CI para um diretório
+que ainda não existe deixaria o pipeline vermelho sem nenhum defeito real.
 
 ## 7. Uso de IA no desenvolvimento
 

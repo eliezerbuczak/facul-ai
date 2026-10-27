@@ -5,7 +5,17 @@ export default {
     'scope-enum': [
       2,
       'always',
-      ['alunos', 'financeiro', 'assistente', 'web', 'infra', 'docs', 'deps'],
+      [
+        'alunos',
+        'financeiro',
+        'assistente',
+        'web',
+        'infra',
+        'specs',
+        'adr',
+        'readme',
+        'deps',
+      ],
     ],
     // Aviso, não erro: `chore: iniciar repositório` é legítimo sem escopo.
     'scope-empty': [1, 'never'],
