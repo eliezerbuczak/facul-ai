@@ -14,3 +14,4 @@ export {
 } from './domain/status-academico.js';
 
 export { criarAlunoRepositoryEmMemoria } from './infra/aluno.repository.memoria.js';
+export { rotasDeAlunos } from './http/alunos.rotas.js';
