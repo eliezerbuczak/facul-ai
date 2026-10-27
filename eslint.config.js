@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 
 /**
@@ -25,7 +26,7 @@ const MSG_DOMINIO =
   'a causa-raiz do item 4, ver docs/06 §2.';
 
 export default [
-  { ignores: ['**/node_modules/**', '**/coverage/**', '**/dist/**'] },
+  { ignores: ['**/node_modules/**', '**/coverage/**', '**/dist/**', '**/.vite/**'] },
 
   js.configs.recommended,
 
@@ -103,6 +104,31 @@ export default [
           ],
         },
       ],
+    },
+  },
+
+  // Front-end: JSX, globais de navegador.
+  //
+  // frontend/src/components/ui/ fica de fora: é código gerado pelo shadcn,
+  // copiado para dentro do projeto. Lintar código de terceiro produz ruído
+  // que ninguém vai agir, e reformatá-lo quebraria o diff contra o upstream
+  // na hora de atualizar um componente.
+  {
+    files: ['frontend/src/**/*.{js,jsx}'],
+    ignores: ['frontend/src/components/ui/**'],
+    plugins: { 'react-hooks': reactHooks },
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: { ...globals.browser },
+      parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      'no-console': ['error', { allow: ['warn', 'error'] }],
+      // JSX usa os identificadores de componente no markup; o parser base do
+      // ESLint não enxerga isso e acusaria falso positivo.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z]' }],
     },
   },
 
