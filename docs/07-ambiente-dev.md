@@ -208,7 +208,6 @@ não a encontraria. Uma config na raiz, com escopo por `files:`, resolve os dois
 | `test:cov` | `node --test --experimental-test-coverage` | Relatório de cobertura |
 | `db:migrate` | `node scripts/migrar.js` | Aplica `migrations/*.sql` |
 | `db:seed` | `node scripts/semear.js` | Carrega `seed/dados.json` no MySQL |
-| `seed:gerar` | `node scripts/gerar-seed.js` | Regenera o seed com datas relativas a hoje |
 
 > `--env-file-if-exists` em vez de `--env-file`: sem ele, um clone sem `.env`
 > falha na inicialização. Com ele, `npm install && npm run dev` funciona direto

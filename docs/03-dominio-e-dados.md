@@ -184,10 +184,24 @@ consiga reproduzir cada um pela interface, sem escrever teste:
 | 9 | `CANCELADO`, sem nenhuma parcela | Conjunto vazio é adimplente (caso 1) |
 | 10–12 | Variações para dar volume e testar busca/paginação | RF-01, RF-02 |
 
-As datas do seed são **relativas à data de execução**, geradas por um script
-(`npm run seed:gerar`) a partir de deslocamentos (`-40d`, `+0d`, `+30d`) e
-gravadas como datas absolutas no JSON. Datas fixas no arquivo apodreceriam: o
-caso "vence hoje" deixaria de testar o que precisa testar no dia seguinte.
+### Datas são deslocamentos, não valores absolutos
+
+O JSON guarda **deslocamentos em dias a partir de hoje** (`vencimentoEmDias: -40`,
+`0`, `+25`), resolvidos para datas absolutas na carga por `platform/seed.js`.
+
+A alternativa — gerar datas absolutas por script — apodrece: gerado hoje, o
+perfil "vence hoje" deixa de demonstrar o caso 3 amanhã, **sem nenhum sinal de
+que parou**. O avaliador abriria a interface achando que está vendo o caso de
+borda e estaria vendo outro. Com deslocamentos não há o que regenerar e não há
+como apodrecer.
+
+A competência de cada parcela é derivada do mês do vencimento, e um pagamento
+sem `valorPagoCentavos` explícito quita integralmente — pagamento parcial é
+sempre declarado, nunca inferido.
+
+Cada perfil declara em `situacaoEsperada` qual resultado deve produzir, e um
+teste confere isso contra a regra real. Sem esse teste, a afirmação de que o
+seed cobre os casos de borda valeria por confiança no comentário do arquivo.
 
 > Dados fictícios. Nomes gerados; nenhum dado pessoal real (RNF-03, item 5 do
 > enunciado).
