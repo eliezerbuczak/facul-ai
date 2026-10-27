@@ -13,7 +13,7 @@ Só precisa de **Node 22 ou superior**. Não precisa de Docker, banco, nem chave
 de API.
 
 ```bash
-git clone git@github.com:eliezerbuczak/facul-ai.git
+git clone https://github.com/eliezerbuczak/facul-ai.git
 cd facul-ai
 
 npm install                       # ferramental (lint, hooks de commit)
@@ -90,8 +90,94 @@ simulado é só *a decisão de qual ferramenta chamar* — a parte que o LLM far
 A fronteira entre implementado e demonstrado é, literalmente, **um arquivo**:
 `backend/src/modules/assistente/infra/demo.provider.js`.
 
-Para usar a integração real, basta preencher `ANTHROPIC_API_KEY` no `.env`.
-Nenhuma mudança de código.
+### Configurar a integração real com a Anthropic
+
+Nenhuma mudança de código — a troca é por variável de ambiente.
+
+**1.** Gere uma chave em <https://console.anthropic.com> → *API Keys*.
+
+**2.** Preencha no `.env` da raiz (criado automaticamente no primeiro
+`npm run dev`):
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+**3.** Reinicie o back-end e confirme que o modo mudou:
+
+```bash
+curl -s localhost:3000/api/health
+# {"status":"ok","persistencia":"memoria","assistente":{"modo":"anthropic"}}
+```
+
+Toda resposta do assistente passa a vir com `"modo": "anthropic"`, e a
+interface troca o selo de *modo demonstrativo* para *IA real*.
+
+#### Como a integração funciona
+
+A aplicação **não** manda os dados no prompt. Ela envia a pergunta mais a
+*descrição* de quatro ferramentas de consulta, sem nenhum dado:
+
+| Ferramenta | Para quê |
+|---|---|
+| `listar_alunos` | Recorte por status ou situação financeira |
+| `obter_aluno` | Um aluno por matrícula ou nome |
+| `obter_financeiro` | Situação, totalizadores e parcelas de um aluno |
+| `contar_alunos` | Agregação, sem trazer a lista |
+
+O modelo responde pedindo uma chamada; o back-end executa contra os mesmos
+casos de uso que servem a API REST; só o recorte retornado entra no contexto.
+Laço em `application/responder-pergunta.js`, teto de 5 voltas.
+
+#### O que é enviado em cada requisição
+
+```js
+client.messages.create({
+  model: 'claude-opus-5',        // ANTHROPIC_MODEL
+  max_tokens: 8192,
+  system: PROMPT_DE_SISTEMA,     // regras de grounding
+  tools: FERRAMENTAS,
+  messages,
+  output_config: { effort: 'low' },  // ANTHROPIC_EFFORT
+});
+```
+
+Duas decisões que valem explicar:
+
+- **O raciocínio não é desligado.** No Claude Opus 5 ele vem ligado por padrão.
+  Desligar tem um modo de falha conhecido em carga de *tool use*: o modelo
+  ocasionalmente escreve a chamada de ferramenta como **texto visível** em vez
+  de emitir o bloco `tool_use` — a chamada nunca executa, nenhum erro é
+  levantado, e a requisição retorna 200. Custo é controlado por `effort`.
+- **`max_tokens` em 8192.** Com raciocínio ligado, ele limita raciocínio
+  **mais** texto somados; um valor apertado trunca a resposta no meio.
+
+#### Ajustes de custo
+
+| Variável | Padrão | Efeito |
+|---|---|---|
+| `ANTHROPIC_MODEL` | `claude-opus-5` | `claude-haiku-4-5` custa bem menos e dá conta destas consultas |
+| `ANTHROPIC_EFFORT` | `low` | Principal controle de custo e latência |
+| `ANTHROPIC_TIMEOUT_MS` | `20000` | Em milissegundos. O padrão do SDK é 10 min, inviável num request web |
+
+#### Falhas do provedor
+
+Nenhuma derruba a API — todas viram resposta tratada, com o detalhe no log e
+nunca na mensagem devolvida (ela citaria a chave):
+
+| Situação | Resposta |
+|---|---|
+| Chave inválida, sem permissão, modelo inexistente | `503 IA_INDISPONIVEL` |
+| Limite de requisições | `429 LIMITE_DE_REQUISICOES` |
+| Tempo esgotado | `504 IA_TIMEOUT` |
+| 5xx do provedor | `503 IA_INDISPONIVEL` |
+| Recusa do classificador, resposta truncada ou vazia | `502 IA_RESPOSTA_INVALIDA` |
+
+> **Nunca executado contra a API real.** O código tem teste com cliente
+> injetado — forma da requisição, leitura dos blocos, `stop_reason` conferido
+> antes do conteúdo, e o mapeamento de cada exceção tipada do SDK. Mas sem
+> chave, nenhuma requisição real foi feita. Isso é afirmação verificável por
+> leitura, não por execução.
 
 ---
 

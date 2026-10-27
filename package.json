@@ -1,9 +1,9 @@
 {
   "name": "facul-ai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
-  "description": "Ferramental compartilhado do repositório: lint, formatação e hooks de commit. Não é um workspace — backend/ e frontend/ declaram as próprias dependências.",
+  "description": "Ferramental compartilhado do reposit\u00f3rio: lint, formata\u00e7\u00e3o e hooks de commit. N\u00e3o \u00e9 um workspace \u2014 backend/ e frontend/ declaram as pr\u00f3prias depend\u00eancias.",
   "engines": {
     "node": ">=22"
   },
