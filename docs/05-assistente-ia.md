@@ -302,6 +302,28 @@ try {
 cliente da nossa API, uma chave nossa inválida é indisponibilidade do serviço —
 ele não tem o que fazer com um `401`. O detalhe real vai para o log.
 
+Duas decisões do mapeamento que valem registro:
+
+- **`AuthenticationError` vira 503, não 401.** Do ponto de vista de quem chama
+  a nossa API, uma chave **nossa** inválida é indisponibilidade do serviço — não
+  há o que ele faça com um 401. E a mensagem original nunca é repassada, porque
+  ela cita a chave.
+- **`APIError` 4xx vira 502, 5xx vira 503.** São coisas diferentes: 5xx é
+  problema do provedor, 4xx é requisição nossa malformada. Colapsar os dois em
+  503 esconderia um defeito nosso atrás de "serviço indisponível".
+
+### Fallback de recusa: considerado e deixado de fora
+
+O Claude Opus 5 aceita um parâmetro `fallbacks` que reexecuta a requisição em
+outro modelo quando um classificador recusa. Não foi implementado, por três
+razões: exige o endpoint beta e um cabeçalho adicional; recusa é altamente
+improvável em perguntas sobre dados acadêmicos fictícios; e não há como
+exercitar o caminho sem chave, o que o deixaria sem teste.
+
+O que **é** obrigatório e está implementado é tratar `stop_reason: 'refusal'`
+como resposta válida da API — ver abaixo. Essa é a parte que quebra o código
+se faltar; o fallback é otimização.
+
 ### `stop_reason` antes de `content`
 
 ```js
