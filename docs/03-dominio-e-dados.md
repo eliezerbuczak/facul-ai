@@ -113,6 +113,11 @@ A regra completa, com os casos de borda e a tabela de testes, está no
 
 ## 3. Schema MySQL
 
+> **Não implementado.** Esta seção é especificação, não descrição do que
+> existe. A porta de repositório aceita o adaptador; ele não foi escrito. Ver
+> o quadro de estado no [README](../README.md).
+
+
 ```sql
 -- migrations/001_schema.sql
 
