@@ -70,6 +70,35 @@ test('pergunta fora do repertório responde sem inventar e sem chamar ferramenta
   assert.equal(/\d/.test(d.texto), false);
 });
 
+test('palavra de intenção fora do domínio não dispara ferramenta', async () => {
+  // Encontrado em teste manual: "quantos habitantes" casava com o padrão de
+  // pergunta quantitativa e devolvia a contagem de ALUNOS. A resposta era
+  // verdadeira e completamente sem sentido para a pergunta.
+  for (const p of [
+    'Qual a capital da Austrália e quantos habitantes tem?',
+    'quantos dias tem fevereiro?',
+    'me resume o enredo de Dom Casmurro',
+    'quanto custa um carro novo?',
+  ]) {
+    const d = await perguntar(p);
+    assert.equal(d.tipo, 'resposta', p);
+    assert.match(d.texto, /demonstrativo/i, p);
+  }
+});
+
+test('intenção dentro do domínio continua disparando a ferramenta', async () => {
+  for (const [p, ferramenta] of [
+    ['quantos alunos temos?', 'contar_alunos'],
+    ['quantas matrículas ativas?', 'contar_alunos'],
+    ['quantos estudantes estão inadimplentes?', 'contar_alunos'],
+    ['quem está com mensalidade em aberto?', 'listar_alunos'],
+  ]) {
+    const d = await perguntar(p);
+    assert.equal(d.tipo, 'ferramentas', p);
+    assert.equal(d.chamadas[0].nome, ferramenta, p);
+  }
+});
+
 test('a decisão tem a forma de blocos de tool use da API real', async () => {
   const d = await perguntar('quem está devendo?');
   const bloco = d.conteudoBruto[0];
