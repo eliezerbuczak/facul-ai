@@ -81,6 +81,31 @@ export default [
     },
   },
 
+  // platform/ é raiz de composição, não um passe livre. O salto daqui tem
+  // forma diferente (../modules/x/...) e escapava de CRUZAR_MODULO, que casa
+  // com ../../x/... — o buraco só apareceu quando um import real passou batido.
+  {
+    files: ['backend/src/platform/**/*.js'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '../modules/*/domain/**',
+                '../modules/*/application/**',
+                '../modules/*/infra/**',
+                '../modules/*/http/**',
+              ],
+              message: MSG_MODULO,
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   // Scripts operacionais falam com o terminal.
   {
     files: ['scripts/**/*.js', 'backend/scripts/**/*.js'],

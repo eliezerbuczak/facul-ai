@@ -52,3 +52,10 @@ export function alunoNaoEncontrado() {
     status: 404,
   });
 }
+
+/** @returns {ErroDeAplicacao} */
+export function iaRespostaInvalida(
+  mensagem = 'O assistente não produziu uma resposta utilizável.',
+) {
+  return new ErroDeAplicacao('IA_RESPOSTA_INVALIDA', mensagem, { status: 502 });
+}

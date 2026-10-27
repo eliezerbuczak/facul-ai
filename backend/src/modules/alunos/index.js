@@ -15,3 +15,7 @@ export {
 
 export { criarAlunoRepositoryEmMemoria } from './infra/aluno.repository.memoria.js';
 export { rotasDeAlunos } from './http/alunos.rotas.js';
+
+export { criarContarAlunos } from './application/contar-alunos.js';
+export { criarListarAlunos } from './application/listar-alunos.js';
+export { criarObterAluno } from './application/obter-aluno.js';
