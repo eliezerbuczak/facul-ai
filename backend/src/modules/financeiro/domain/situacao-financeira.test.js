@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
+import { hojeEm } from '../../../shared/data.js';
 import { calcularSituacao } from './situacao-financeira.js';
 import { parcelaEmAberto, parcelaParcial, parcelaQuitada } from './_fixtures.js';
 
@@ -78,4 +79,27 @@ test('caso 11: pagamento acima do valor devido quita a parcela', () => {
     }),
   ];
   assert.equal(calcularSituacao(parcelas, HOJE), 'ADIMPLENTE');
+});
+
+// Casos 3, 5 e 8 de docs/06 §3 — o limite do vencimento.
+// São os casos que uma implementação ingênua erra, e por isso os que de fato
+// respondem ao item 4 do enunciado.
+
+test('caso 3: parcela que vence hoje e não foi paga não torna o aluno inadimplente', () => {
+  const parcelas = [parcelaEmAberto({ vencimento: HOJE })];
+  assert.equal(calcularSituacao(parcelas, HOJE), 'ADIMPLENTE');
+});
+
+test('caso 5: parcela paga com atraso não deixa resíduo de inadimplência', () => {
+  const parcelas = [parcelaQuitada({ vencimento: '2026-09-10', pagoEm: '2026-09-28' })];
+  assert.equal(calcularSituacao(parcelas, HOJE), 'ADIMPLENTE');
+});
+
+test('caso 8: às 23h30 de Brasília a parcela que vence hoje ainda não venceu', () => {
+  // Causa-raiz D de docs/06 §2: new Date() é um instante em UTC, e às 23h30 de
+  // Brasília já é o dia seguinte lá. Derivar `hoje` pelo fuso elimina a janela.
+  const agora = new Date('2026-10-27T02:30:00Z');
+  const hoje = hojeEm('America/Sao_Paulo', agora);
+  const parcelas = [parcelaEmAberto({ vencimento: '2026-10-26' })];
+  assert.equal(calcularSituacao(parcelas, hoje), 'ADIMPLENTE');
 });
