@@ -8,6 +8,21 @@ const FALLBACK =
   'status, dados de um aluno por nome ou matrícula, e o resumo financeiro ' +
   'de um aluno. Pode reformular nesses termos?';
 
+/**
+ * A pergunta fala do domínio acadêmico?
+ *
+ * Portão antes da classificação de intenção. Sem ele, "quantos habitantes tem
+ * a Austrália" casa com o padrão de pergunta quantitativa e devolve a contagem
+ * de alunos — resposta verdadeira e completamente sem sentido. Encontrado em
+ * teste manual, não pela suíte: o caso que eu tinha escrito não continha
+ * palavra de intenção.
+ *
+ * O provider real não precisa disso — o modelo entende o assunto. É custo do
+ * classificador por palavra-chave, e fica contido nele.
+ */
+const DOMINIO =
+  /alun|estudante|matricul|curso|mensalidade|parcela|financeir|inadimplen|adimplen|pagament|divida|devendo|\bdeve\b|tranca|cancel|formad|formar|\bativ|em dia|quitad|em aberto|turma|situacao/;
+
 const STATUS_POR_TERMO = [
   [/\bativ/, 'ATIVO'],
   [/tranca/, 'TRANCADO'],
@@ -64,11 +79,17 @@ function resultadosEmMao(mensagens) {
  */
 function classificar(pergunta) {
   const t = normalizarParaBusca(pergunta);
-  const status = STATUS_POR_TERMO.find(([re]) => re.test(t))?.[1] ?? null;
-  const idEmFoco = pergunta.match(
+  const idEmFocoBruto = pergunta.match(
     /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i,
-  )?.[0];
-  const matricula = pergunta.match(/\b\d{10}\b/)?.[0];
+  );
+  const matriculaBruta = pergunta.match(/\b\d{10}\b/);
+
+  // Matrícula ou id na pergunta já são sinal de domínio por si sós.
+  if (!DOMINIO.test(t) && !idEmFocoBruto && !matriculaBruta) return null;
+
+  const status = STATUS_POR_TERMO.find(([re]) => re.test(t))?.[1] ?? null;
+  const idEmFoco = idEmFocoBruto?.[0];
+  const matricula = matriculaBruta?.[0];
 
   const inadimplencia = /inadimplent|devendo|deve\b|atras|em aberto|pendent/.test(t);
   const adimplencia = /adimplent|em dia|quitad|pagaram/.test(t);
